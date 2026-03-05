@@ -300,8 +300,6 @@ feishu-batch-downloader/
 ├── requirements.txt        # Python 依赖
 ├── README.md               # 英文文档
 ├── README_CN.md            # 中文文档
-├── CLAUDE.md               # 开发文档
-├── PROGRESS.md             # 开发日志
 └── LICENSE                 # MIT 许可证
 ```
 
