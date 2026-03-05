@@ -42,7 +42,7 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/feishu-batch-downloader.git
+git clone https://github.com/ACEEE-1222/feishu-batch-downloader.git
 cd feishu-batch-downloader
 ```
 
@@ -326,8 +326,8 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 ## 💬 Support
 
-- Bug Reports: [GitHub Issues](https://github.com/yourusername/feishu-batch-downloader/issues)
-- Feature Requests: [GitHub Discussions](https://github.com/yourusername/feishu-batch-downloader/discussions)
+- Bug Reports: [GitHub Issues](https://github.com/ACEEE-1222/feishu-batch-downloader/issues)
+- Feature Requests: [GitHub Discussions](https://github.com/ACEEE-1222/feishu-batch-downloader/discussions)
 
 ## 🎯 Use Cases
 
