@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞书文档下载器 | Feishu Document Downloader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 30px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 飞书文档下载器</h1>
+        <p class="subtitle">Feishu Document Downloader</p>
+
+        <!-- 配置区域 -->
+        <div class="section">
+            <div class="section-title">⚙️ 配置凭证</div>
+
+            <!-- 教程提示 - 可折叠 -->
+            <details style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; line-height: 1.8; cursor: pointer;">
+                <summary style="font-weight: 600; color: #1976d2; cursor: pointer; user-select: none;">
+                    📖 配置凭证完整流程（点击展开/收起）
+                </summary>
+                <div style="margin-top: 15px;">
+                    <strong>步骤 1：创建应用</strong><br>
+                    访问 <a href="https://open.feishu.cn/app" target="_blank" style="color: #1976d2;">飞书开放平台</a> → 点击"创建企业自建应用"<br><br>
+
+                    <strong>步骤 2：获取凭证</strong><br>
+                    进入"凭证与基础信息"页面，分别复制：<br>
+                    • <strong>App ID</strong>（以 cli_ 开头）<br>
+                    • <strong>App Secret</strong>（长字符串，与 App ID 不同）<br><br>
+
+                    <strong>步骤 3：配置权限（重要！）</strong><br>
+                    进入"权限管理"页面，点击"批量配置权限"，粘贴以下 JSON：<br>
+                    <div style="background: #fff; padding: 10px; border-radius: 4px; margin: 8px 0; font-family: 'Courier New', monospace; font-size: 12px; overflow-x: auto;">
+<pre style="margin: 0;">{
+  "scopes": {
+    "tenant": [
+      "docx:document:readonly",
+      "drive:drive:readonly",
+      "wiki:wiki:readonly"
+    ],
+    "user": [
+      "docx:document:readonly",
+      "wiki:wiki:readonly"
+    ]
+  }
+}</pre>
+                    </div>
+                    或手动添加以下权限：<br>
+                    • <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">docx:document:readonly</code> - 读取文档内容<br>
+                    • <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">drive:drive:readonly</code> - 读取云空间文件<br>
+                    • <code style="background: #fff; padding: 2px 6px; border-radius: 3px;">wiki:wiki:readonly</code> - 读取知识库内容<br><br>
+
+                    <strong>步骤 4：发布应用</strong><br>
+                    进入"版本管理与发布" → 创建版本 → 申请发布 → 发布到企业内部<br><br>
+
+                    <strong>步骤 5：保存配置</strong><br>
+                    在下方输入框填入 App ID 和 App Secret，点击"保存配置"
+                </div>
+            </details>
+
+            <div class="form-group">
+                <label for="app_id">App ID</label>
+                <input type="text" id="app_id" placeholder="cli_xxxxxxxxxx" value="{{ app_id }}">
+            </div>
+            <div class="form-group">
+                <label for="app_secret">App Secret</label>
+                <input type="password" id="app_secret" placeholder="输入你的 App Secret" value="{{ app_secret }}">
+            </div>
+            <button onclick="saveConfig()">💾 保存配置</button>
+            <div id="config-message" class="message"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 下载区域 -->
+        <div class="section">
+            <div class="section-title">📄 下载文档</div>
+            <div class="form-group">
+                <label for="doc_url">文档 URL 或 ID（支持多个，每行一个）</label>
+                <textarea id="doc_url" rows="4" placeholder="https://example.feishu.cn/docx/xxxxx&#10;https://example.feishu.cn/docx/yyyyy&#10;..."></textarea>
+                <div class="help-text">粘贴飞书文档链接或文档 ID，支持批量下载（每行一个）</div>
+            </div>
+            <div class="form-group">
+                <label for="output_dir">保存位置</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="output_dir" placeholder="{{ default_download_path }}" value="{{ default_download_path }}" style="flex: 1;">
+                    <button type="button" onclick="useDownloadsFolder()" style="width: auto; padding: 12px 20px; background: #6c757d;">📁 使用下载文件夹</button>
+                </div>
+                <div class="help-text">输入完整路径（如 /Users/你的用户名/Documents/feishu）或使用默认下载文件夹</div>
+            </div>
+            <div class="form-group">
+                <label for="output_format">导出格式</label>
+                <select id="output_format" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                    <option value="markdown">Markdown (.md)</option>
+                    <option value="pdf">PDF (.pdf)</option>
+                </select>
+                <div class="help-text">选择文档导出格式</div>
+            </div>
+            <div class="form-group">
+                <label style="display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="recursive" style="margin-right: 8px; width: auto;">
+                    <span>递归下载（Wiki：下载所有子页面 | 文档：下载链接的子文档）</span>
+                </label>
+            </div>
+            <button onclick="downloadDoc()">⬇️ 开始下载</button>
+
+            <!-- 进度条 -->
+            <div id="progress-container" style="display: none; margin-top: 20px;">
+                <div style="background: #f0f0f0; border-radius: 10px; overflow: hidden; height: 30px; position: relative;">
+                    <div id="progress-bar" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                    <div id="progress-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #333; font-weight: 600; font-size: 14px;">0%</div>
+                </div>
+                <div id="progress-message" style="margin-top: 10px; color: #666; font-size: 14px; text-align: center;"></div>
+            </div>
+
+            <div class="loading" id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">准备下载...</p>
+            </div>
+            <div id="download-message" class="message"></div>
+        </div>
+
+        <div class="footer">
+            <p>💡 需要帮助？查看 <a href="https://open.feishu.cn/" target="_blank">飞书开放平台文档</a></p>
+            <p style="margin-top: 5px;">Made with ❤️ by Open Source Community</p>
+        </div>
+    </div>
+
+    <script>
+        function showMessage(elementId, message, isSuccess) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'message ' + (isSuccess ? 'success' : 'error');
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 5000);
+        }
+
+        async function saveConfig() {
+            const appId = document.getElementById('app_id').value.trim();
+            const appSecret = document.getElementById('app_secret').value.trim();
+
+            if (!appId || !appSecret) {
+                showMessage('config-message', '请填写完整的配置信息', false);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        app_id: appId,
+                        app_secret: appSecret
+                    })
+                });
+
+                const data = await response.json();
+                showMessage('config-message', data.message, data.success);
+            } catch (error) {
+                showMessage('config-message', '保存失败: ' + error.message, false);
+            }
+        }
+
+        function useDownloadsFolder() {
+            document.getElementById('output_dir').value = '{{ default_download_path }}';
+            showMessage('download-message', '已设置为系统下载文件夹', true);
+        }
+
+        async function downloadDoc() {
+            const docUrl = document.getElementById('doc_url').value.trim();
+            const recursive = document.getElementById('recursive').checked;
+            const outputDir = document.getElementById('output_dir').value.trim() || './downloads';
+            const outputFormat = document.getElementById('output_format').value;
+
+            if (!docUrl) {
+                showMessage('download-message', '请输入文档 URL', false);
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const progressContainer = document.getElementById('progress-container');
+            const downloadMessage = document.getElementById('download-message');
+
+            loading.style.display = 'block';
+            progressContainer.style.display = 'none';
+            downloadMessage.style.display = 'none';
+
+            try {
+                // 启动下载任务
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        doc_urls: docUrl,
+                        recursive: recursive,
+                        output_dir: outputDir,
+                        output_format: outputFormat
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    loading.style.display = 'none';
+                    showMessage('download-message', data.message, false);
+                    return;
+                }
+
+                // 开始监听进度
+                loading.style.display = 'none';
+                progressContainer.style.display = 'block';
+
+                const taskId = data.task_id;
+                const eventSource = new EventSource(`/api/progress/${taskId}`);
+
+                eventSource.onmessage = function(event) {
+                    const progress = JSON.parse(event.data);
+
+                    if (progress.type === 'start') {
+                        updateProgress(0, progress.total, progress.message);
+                    } else if (progress.type === 'progress') {
+                        const percent = progress.total ? (progress.current / progress.total * 100) : 0;
+                        updateProgress(percent, progress.total, progress.message);
+                    } else if (progress.type === 'complete') {
+                        updateProgress(100, progress.count, progress.message);
+                        eventSource.close();
+                        showMessage('download-message', progress.message, true);
+
+                        // 清空输入
+                        document.getElementById('doc_url').value = '';
+                        document.getElementById('recursive').checked = false;
+
+                        // 3秒后隐藏进度条
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                        }, 3000);
+                    } else if (progress.type === 'error') {
+                        eventSource.close();
+                        progressContainer.style.display = 'none';
+                        showMessage('download-message', progress.message, false);
+                    }
+                };
+
+                eventSource.onerror = function() {
+                    eventSource.close();
+                    progressContainer.style.display = 'none';
+                    showMessage('download-message', '连接中断，请刷新页面重试', false);
+                };
+
+            } catch (error) {
+                loading.style.display = 'none';
+                progressContainer.style.display = 'none';
+                showMessage('download-message', '下载失败: ' + error.message, false);
+            }
+        }
+
+        function updateProgress(percent, total, message) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const progressMessage = document.getElementById('progress-message');
+
+            progressBar.style.width = percent + '%';
+            progressText.textContent = Math.round(percent) + '%';
+            progressMessage.textContent = message || '';
+        }
+
+        // 回车键提交
+        document.getElementById('doc_url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                downloadDoc();
+            }
+        });
+    </script>
+</body>
+</html>
