@@ -42,7 +42,7 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/yourusername/feishu-batch-downloader.git
+git clone https://github.com/ACEEE-1222/feishu-batch-downloader.git
 cd feishu-batch-downloader
 ```
 
@@ -326,8 +326,8 @@ feishu-batch-downloader/
 
 ## 💬 支持
 
-- 问题反馈：[GitHub Issues](https://github.com/yourusername/feishu-batch-downloader/issues)
-- 功能建议：[GitHub Discussions](https://github.com/yourusername/feishu-batch-downloader/discussions)
+- 问题反馈：[GitHub Issues](https://github.com/ACEEE-1222/feishu-batch-downloader/issues)
+- 功能建议：[GitHub Discussions](https://github.com/ACEEE-1222/feishu-batch-downloader/discussions)
 
 ## 🎯 使用场景
 
